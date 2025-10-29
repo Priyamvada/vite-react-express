@@ -32,7 +32,18 @@ exports.login = async (req, res) => {
 
     const token = authUtils.generateToken(user);
 
-    res.set('Authorization', `Bearer ${token}`);
+    res.cookie('access_token', token, {
+        httpOnly: true, // Prevents client-side JavaScript access
+        secure: process.env.NODE_ENV === 'production', // Use secure in production (HTTPS)
+        sameSite: 'Lax', // Or 'Strict' for stricter CSRF protection
+        maxAge: 86400000 // Cookie expiration in milliseconds (1 day in this example)
+    });
+    res.cookie('username', user.username, {
+        httpOnly: false, // Allow client-side JavaScript access
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'Lax',
+        maxAge: 86400000
+    });
     res.status(200).send({
       id: user.id,
       username: user.username,
@@ -45,6 +56,7 @@ exports.login = async (req, res) => {
 };
 
 exports.logout = (req, res) => {
-  // Since JWTs are stateless, logout can be handled on the client side by deleting the token.
+  res.clearCookie('access_token', { httpOnly: true , secure: process.env.NODE_ENV === 'production', sameSite: 'Lax' });
+  res.clearCookie('username', { httpOnly: false , secure: process.env.NODE_ENV === 'production', sameSite: 'Lax' });
   res.status(200).send({ message: 'User logged out successfully!' });
 };
