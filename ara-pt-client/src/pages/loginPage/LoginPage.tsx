@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { login } from '../../data/authProvider';
 import { LoadingSpinner } from '../../components';
+import { useNavigate } from 'react-router-dom';
+import { useCookie } from '../../hooks';
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState<string>('');
@@ -8,6 +10,8 @@ const LoginPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const activeUsername = useCookie('username');
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // Prevent default form submission
@@ -17,14 +21,7 @@ const LoginPage: React.FC = () => {
       const response = await login(username, password);
       setSuccessMessage(response.message);
       setError(null);
-
-      // If a token is returned, store it (e.g., in localStorage)
-      if (response.token) {
-        localStorage.setItem('jwtToken', response.token);
-        // Redirect or perform other actions after successful login
-        console.log('Login successful! Token:', response.token);
-      }
-
+      navigate('/'); // Redirect to main page on successful login
     } catch (error) {
       setError((error as Error).message);
       setSuccessMessage(null);
@@ -33,6 +30,12 @@ const LoginPage: React.FC = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (activeUsername) {
+      navigate('/'); // Redirect to main page if already logged in
+    }
+  }, [navigate, activeUsername]);
 
   return (
     <div>
