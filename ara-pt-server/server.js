@@ -1,8 +1,4 @@
-const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
-// const bcrypt = require('bcryptjs');
-// const path = require('path');
-
+require("dotenv").config();
 const app = require('./app');
 const PORT = process.env.PORT || 8080;
 

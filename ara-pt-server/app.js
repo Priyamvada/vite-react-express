@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const db = require('./models');
+// db.sequelize.sync({ force: true });
 
 const app = express();
 
@@ -16,25 +18,38 @@ app.get('/api/hello', (req, res) => {
   res.json({ message: 'Hello from the server!' });
 });
 
-app.post('/api/login', async (req, res) => {
-  console.log('Login attempt:', req.body);
-  const { username, password } = req.body;
+// app.post('/api/login', async (req, res) => {
+//   console.log('Login attempt:', req.body);
+//   const { username, password } = req.body;
 
-  const user = null;
-  // const user = users.find(u => u.username === username);
+//   try {
+//     await db.sequelize.authenticate();
+//     console.log('Connection has been established successfully.');
 
-  if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials.' });
-  }
+//     const users = await db.User.findAll();
+//     console.log('All users:', JSON.stringify(users, null, 2));
+//   } catch (error) {
+//     console.error('Unable to connect to the database:', error);
+//   } finally {
+//     await db.sequelize.close();
+//   }
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid credentials.' });
-  }
+//   const user = null;
+//   // const user = users.find(u => u.username === username);
 
-  // Generate JWT token
-  const token = jwt.sign({ username: username }, 'your_jwt_secret', { expiresIn: '1h' });
-  res.json({ message: 'Login successful', token });
-});
+//   if (!user) {
+//       return res.status(401).json({ message: 'Invalid credentials.' });
+//   }
+
+//   const isMatch = await bcrypt.compare(password, user.password);
+//   if (!isMatch) {
+//       return res.status(401).json({ message: 'Invalid credentials.' });
+//   }
+
+//   // Generate JWT token
+//   const token = jwt.sign({ username: username }, 'your_jwt_secret', { expiresIn: '1h' });
+//   res.json({ message: 'Login successful', token });
+// });
+require('./routes/auth.routes')(app);
 
 module.exports = app;
