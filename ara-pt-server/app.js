@@ -51,5 +51,6 @@ app.get('/api/hello', (req, res) => {
 //   res.json({ message: 'Login successful', token });
 // });
 require('./routes/auth.routes')(app);
+require('./routes/invoice.routes')(app);
 
 module.exports = app;

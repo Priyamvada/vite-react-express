@@ -32,11 +32,11 @@ exports.login = async (req, res) => {
 
     const token = authUtils.generateToken(user);
 
+    res.set('Authorization', `Bearer ${token}`);
     res.status(200).send({
       id: user.id,
       username: user.username,
       email: user.email,
-      accessToken: token
     });
   } catch (error) {
     console.error(error);
