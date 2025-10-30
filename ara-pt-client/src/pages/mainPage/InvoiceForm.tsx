@@ -3,8 +3,7 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { createInvoice } from "../../data/invoiceProvider";
 import { LoadingSpinner } from "../../components";
 import { Colour, FontSize } from "../../assets";
-
-type Currency = "USD" | "MYR" | "INR" | "IDR" | "THB";
+import type { currency } from "./invoice.types";
 
 interface InvoiceFormInputs {
   customer_email: string;
@@ -12,7 +11,7 @@ interface InvoiceFormInputs {
   invoice_date: string;
   due_date: string;
   amount: number;
-  currency: Currency;
+  currency: currency;
 }
 
 const InvoiceForm: React.FC = () => {

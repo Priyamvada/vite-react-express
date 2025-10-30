@@ -1,12 +1,7 @@
 import React, { useEffect } from "react";
 import InvoiceForm from "./InvoiceForm";
 import { closeButtonStyle, headerStyle, modalStyle, overlayStyle, titleStyle } from "./InvoiceModal.styles";
-
-interface InvoiceModalProps {
-  isOpen: boolean;
-  editMode?: boolean;
-  onClose: () => void;
-}
+import type { InvoiceModalProps } from "./invoice.types";
 
 const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, editMode, onClose }) => {
   // Close modal on ESC key press

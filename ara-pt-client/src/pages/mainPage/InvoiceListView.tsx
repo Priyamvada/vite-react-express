@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 // import { fetchRepoList, RepoItem } from '../../data/repoListDataProvider';
 import { ListView, type ColumnProps, Toast, LoadingSpinner } from '../../components';
 import type { ListItem } from '../../components/ListView/listView.types';
-import { useNavigate } from 'react-router-dom';
 import { fetchInvoiceList } from '../../data/invoiceProvider';
 import { Colour, FontSize, FontWeight } from '../../assets';
-import { set } from 'react-hook-form';
 import InvoiceModal from './InvoiceModal';
+import InvoicesFilterModal from './InvoicesFilterModal';
+import type { InvoiceFilterCriteria } from './invoice.types';
+import { set } from 'react-hook-form';
 
 interface InvoiceListViewProps {
   styles?: React.CSSProperties;
@@ -22,7 +23,8 @@ export const InvoiceListView: React.FC<InvoiceListViewProps> = ({ styles }) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<any>(null);
   const [showCreateInvoiceModal, setShowCreateInvoiceModal] = useState<boolean>(false);
-  const navigate = useNavigate();
+  const [showFilterModal, setShowFilterModal] = useState<boolean>(false);
+  const [filters, setFilters] = useState<InvoiceFilterCriteria[]>([]);
 
   const fetchInvoices = async () => {
     setLoading(true);
@@ -51,7 +53,7 @@ export const InvoiceListView: React.FC<InvoiceListViewProps> = ({ styles }) => {
   };
 
   const handleFilterInvoiceClick = () => {
-    // Future implementation for filtering invoices
+    setShowFilterModal(true);
   };
 
   useEffect(() => {
@@ -149,6 +151,7 @@ export const InvoiceListView: React.FC<InvoiceListViewProps> = ({ styles }) => {
             </>
           )}
           <InvoiceModal isOpen={showCreateInvoiceModal} editMode={true} onClose={handleInvoiceModalClose} />
+          <InvoicesFilterModal isOpen={showFilterModal} onClose={() => setShowFilterModal(false)} filters={filters} onApplyFilters={setFilters} />
         </div>
         
       )}
