@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { cancelButtonStyle, closeButtonStyle, footerStyle, headerStyle, modalStyle, overlayStyle, titleStyle } from "./InvoiceModal.styles";
+import { closeButtonStyle, headerStyle, modalStyle, overlayStyle, titleStyle } from "./invoiceModal.styles";
 import type { InvoicesFilterModalProps } from "./invoice.types";
 import { Colour, FontSize } from "../../assets";
 

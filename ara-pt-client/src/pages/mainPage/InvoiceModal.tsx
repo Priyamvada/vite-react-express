@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import InvoiceForm from "./InvoiceForm";
-import { closeButtonStyle, headerStyle, modalStyle, overlayStyle, titleStyle } from "./InvoiceModal.styles";
+import { closeButtonStyle, headerStyle, modalStyle, overlayStyle, titleStyle } from "./invoiceModal.styles";
 import type { InvoiceModalProps } from "./invoice.types";
 
 const InvoiceModal: React.FC<InvoiceModalProps> = ({ isOpen, editMode, onClose }) => {

@@ -8,6 +8,7 @@ export const pageHeaderContainerStyles: React.CSSProperties = {
   position: 'sticky',
   zIndex: 10,
   width: '100%',
+  minWidth: '80vh',
   backgroundColor: Colour.backgroundDarkGrey,
   top: 0,
 };

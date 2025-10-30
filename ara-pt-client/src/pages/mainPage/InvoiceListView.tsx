@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
-// import { fetchRepoList, RepoItem } from '../../data/repoListDataProvider';
 import { ListView, type ColumnProps, Toast, LoadingSpinner } from '../../components';
 import type { ListItem } from '../../components/ListView/listView.types';
-import { fetchInvoiceList, generatePaymentLink } from '../../data/invoiceProvider';
+import { fetchInvoiceList, fetchInvoicesByCustomerEmail, generatePaymentLink } from '../../data/invoiceProvider';
 import { Colour, FontSize, FontWeight } from '../../assets';
 import InvoiceModal from './InvoiceModal';
 import InvoicesFilterModal from './InvoicesFilterModal';
 import type { InvoiceFilterCriteria } from './invoice.types';
-import { get, set } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
 
 interface InvoiceListViewProps {
   styles?: React.CSSProperties;
+  accountType: 'manager' | 'customer';
 }
 
 const InvoiceListViewContainerStyles: React.CSSProperties = {
@@ -18,18 +18,41 @@ const InvoiceListViewContainerStyles: React.CSSProperties = {
   minHeight: '80vh',
 };
 
-export const InvoiceListView: React.FC<InvoiceListViewProps> = ({ styles }) => {
+export const InvoiceListView: React.FC<InvoiceListViewProps> = ({ styles, accountType }) => {
   const [invoiceList, setInvoiceList] = useState<ListItem[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<any>(null);
   const [showCreateInvoiceModal, setShowCreateInvoiceModal] = useState<boolean>(false);
   const [showFilterModal, setShowFilterModal] = useState<boolean>(false);
   const [filters, setFilters] = useState<InvoiceFilterCriteria[]>([]);
+  const navigate = useNavigate();
 
   const fetchInvoices = async () => {
     setLoading(true);
     try {
       const data = await fetchInvoiceList();
+      setError(null);
+      setInvoiceList(data.map((invoice) => ({ id: invoice.id.toString(), data: invoice })));
+    } catch (error) {
+      setInvoiceList([]);
+      setError(error?.toString() ?? 'Failed to fetch repositories.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchInvoicesByFilter = async (filters: InvoiceFilterCriteria[]) => {
+    setLoading(true);
+    try {
+      const customerEmail = localStorage.getItem('customer_email');
+      if (!customerEmail) {
+        setInvoiceList([]);
+        setError('Customer email not found in local storage.');
+        setLoading(false);
+        navigate('/login');
+        return;
+      }
+      const data = await fetchInvoicesByCustomerEmail(customerEmail);
       setError(null);
       setInvoiceList(data.map((invoice) => ({ id: invoice.id.toString(), data: invoice })));
     } catch (error) {
@@ -77,7 +100,12 @@ export const InvoiceListView: React.FC<InvoiceListViewProps> = ({ styles }) => {
   }
 
   useEffect(() => {
-    fetchInvoices();
+    if (accountType === 'manager') {
+      fetchInvoices();
+    } else if (localStorage.getItem('customer_email')) {
+      // This is a hack for now. Ideally we would want to have a separate component under customerPaymentsPage and also filters need to be implemented
+      fetchInvoicesByFilter(filters);
+    }
   }, []);
 
   const columnProps: ColumnProps[] = [
@@ -186,15 +214,21 @@ export const InvoiceListView: React.FC<InvoiceListViewProps> = ({ styles }) => {
               <div style={{ marginBottom: '10px', fontWeight: FontWeight.bold, fontSize: FontSize.large }}>
                 Invoice List
               </div>
-              <div className='action-bar' style={{ marginBottom: '10px', textAlign: 'left' }}>
-                <button style={{fontSize: FontSize.small, background: Colour.backgroundBlue}} onClick={handleCreateInvoiceClick}>╋ Create New Invoice</button>
-                <button style={{fontSize: FontSize.small, marginLeft: '10px', borderColor: Colour.textLightGrey}} onClick={handleFilterInvoiceClick}>Filter</button>
-              </div>
+              {accountType === 'manager' && (
+                <div className='action-bar' style={{ marginBottom: '10px', textAlign: 'left' }}>
+                  <button style={{fontSize: FontSize.small, background: Colour.backgroundBlue}} onClick={handleCreateInvoiceClick}>╋ Create New Invoice</button>
+                  <button style={{fontSize: FontSize.small, marginLeft: '10px', borderColor: Colour.textLightGrey}} onClick={handleFilterInvoiceClick}>Filter</button>
+                </div>
+              )}
               <ListView items={invoiceList} columnProps={columnProps} onItemClick={handleInvoiceListItemClick}/>
             </>
           )}
-          <InvoiceModal isOpen={showCreateInvoiceModal} editMode={true} onClose={handleInvoiceModalClose} />
-          <InvoicesFilterModal isOpen={showFilterModal} onClose={() => setShowFilterModal(false)} filters={filters} onApplyFilters={setFilters} />
+          {accountType === 'manager' && (
+            <>
+            <InvoiceModal isOpen={showCreateInvoiceModal} editMode={true} onClose={handleInvoiceModalClose} />
+            <InvoicesFilterModal isOpen={showFilterModal} onClose={() => setShowFilterModal(false)} filters={filters} onApplyFilters={setFilters} />
+            </>
+          )}
         </div>
         
       )}

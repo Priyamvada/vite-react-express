@@ -44,6 +44,16 @@ export async function createInvoice(invoiceData: Omit<InvoiceItem, 'id' | 'paid_
   }
 }
 
+export async function fetchInvoicesByCustomerEmail(customerEmail: string): Promise<InvoiceItem[]> {
+  try {
+    const response = await axios.get(`/invoices_by_email?customer_email=${encodeURIComponent(customerEmail)}`);
+    return response.data.invoices.map((invoice: any): InvoiceItem => convertToInvoiceItem(invoice));
+  } catch (error) {
+    console.error('Failed to fetch invoices for customer:', error);
+    throw error;
+  }
+}
+
 export async function generatePaymentLink(invoiceId: number): Promise<string> {
   try {
     const response = await axios.get(`/generate-payment-link/?invoiceId=${invoiceId}`);

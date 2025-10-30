@@ -35,9 +35,14 @@ interface PageHeaderProps {
    * @returns Callback function when logout is clicked (if provided, logout button is shown)
    */
   onButtonClick?: () => void;
+
+  /**
+   * @returns Optional display name for the user (if provided, shown in header)
+   */
+  displayName?: string;
 }
 
-const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, loading, onSubtitleClick, buttonText, onButtonClick }) => {
+const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, loading, onSubtitleClick, buttonText, onButtonClick, displayName }) => {
   const username = useCookie('username');
 
   return (
@@ -52,9 +57,9 @@ const PageHeader: React.FC<PageHeaderProps> = ({ title, subtitle, loading, onSub
           </div>
         )}
       </div>
-      { username && !loading && (
+      { (username || displayName) && !loading && (
         <div style={{position: 'absolute', top:0, right:0, margin: '10px', fontSize: '14px'}}>
-          <span style={{marginRight: '10px'}}>{username}</span>
+          <span style={{marginRight: '10px'}}>{username || displayName}</span>
           {buttonText && onButtonClick && <button onClick={onButtonClick}>{buttonText}</button> }
         </div>
       )}

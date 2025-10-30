@@ -1,10 +1,10 @@
 import React from 'react';
-import { InvoiceListView } from './InvoiceListView';
+import { InvoiceListView } from '../mainPage/InvoiceListView';
 import PageHeader from '../../components/PageHeader/PageHeader';
 import { logout } from '../../data/authProvider';
 import { useNavigate } from 'react-router-dom';
 
-const MainPage: React.FC = () => {
+const CustomerPaymentsPage: React.FC = () => {
   const [loading, setLoading] = React.useState<boolean>(false);
   const [error, setError] = React.useState<string | null>(null);
   const navigate = useNavigate();
@@ -14,6 +14,7 @@ const MainPage: React.FC = () => {
     try {
       const response = await logout();
       console.log(response.message);
+      localStorage.removeItem('customer_email');
       navigate('/login');
       setError(null);
     } catch (error) {
@@ -27,16 +28,17 @@ const MainPage: React.FC = () => {
   return (
     <div>
       <PageHeader
-      title="Accounts Receivable Manager"
-      subtitle="System to manage your Micro Lending Company's Accounts Receivable, create and view invoices and efficiently generate payment links"
+      title="Make your payments"
+      subtitle="Make your payments in 1 click via the payment links"
       onButtonClick={handleHeaderButtonClick}
       buttonText="Logout"
+      displayName={localStorage.getItem('customer_email') || undefined}
       loading={loading}
       />
       {error && <p style={{ color: 'red' }}>{error}</p>}
-      <InvoiceListView accountType='manager' />
+      <InvoiceListView accountType={'customer'} />
     </div>
   );
 };
 
-export default MainPage;
+export default CustomerPaymentsPage;

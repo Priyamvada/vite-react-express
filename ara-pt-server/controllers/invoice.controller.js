@@ -1,6 +1,7 @@
 'use strict';
 
 const { Invoice, User } = require('../models');
+const { Op } = require('sequelize');
 
 /**
  * POST /invoices
@@ -94,6 +95,33 @@ exports.getInvoices = async (req, res) => {
     res.status(200).json({ invoices });
   } catch (err) {
     console.error('Error fetching invoices:', err);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+};
+
+exports.getInvoicesByCustomerEmail = async (req, res) => {
+  try {
+    const { customer_email } = req.query;
+
+    if (!customer_email) {
+      return res.status(400).json({ error: 'customer_email query parameter is required.' });
+    }
+
+    // Fetch invoices for that customer email
+    const invoices = await Invoice.findAll({
+      where: {
+        customer_email,
+        payment_link: {
+          [Op.not]: null,
+        },
+        paid_amount: 0.0,
+      },
+      order: [['invoice_date', 'DESC']],
+    });
+    
+    return res.status(200).json({ invoices });
+  } catch (err) {
+    console.error('Error fetching invoices by customer email:', err);
     res.status(500).json({ error: 'Internal server error.' });
   }
 };
