@@ -4,6 +4,7 @@ export const Colour = {
   backgroundMediumGrey: '#3C3C3C',
   backgroundLightGrey: '#f0f0f0',
   backgroundWhite: '#FFFFFF',
+  backgroundBlue: '#006ADD',
   textWhite: '#F5F5F5',
   textLightGrey: '#AAA',
   textBlack: '#111',

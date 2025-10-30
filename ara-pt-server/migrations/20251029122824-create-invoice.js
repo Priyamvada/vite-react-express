@@ -31,7 +31,7 @@ module.exports = {
         allowNull: false,
       },
       currency: {
-        type: Sequelize.ENUM('USD', 'MYR', 'IND', 'IDR', 'THB'),
+        type: Sequelize.ENUM('USD', 'MYR', 'INR', 'IDR', 'THB'),
         allowNull: false,
         defaultValue: 'USD',
       },

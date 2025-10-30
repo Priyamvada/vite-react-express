@@ -19,6 +19,13 @@ export const ListView: React.FC<ListViewProps> = (props) => {
         </tr>
       </thead>
       <tbody>
+        { items.length === 0 && (
+          <tr>
+            <td colSpan={columnProps.length} style={{ ...tableCellStyle, ...emptyCellStyle }}>
+              No items to display.
+            </td>
+          </tr>
+        ) }
         {items.map((item, idx) => (
           <tr
             key={item.id || idx}

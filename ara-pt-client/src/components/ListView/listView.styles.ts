@@ -6,9 +6,11 @@ export const listViewTableStyle: React.CSSProperties = {
   borderSpacing: 0,
   fontSize: FontSize.small,
   width: '100%',
+  backgroundColor: Colour.backgroundWhite,
 };
 
 export const tableCellStyle: React.CSSProperties = {
+  color: Colour.textDarkGrey,
   padding: '8px 12px',
   borderBottom: `1px solid ${Colour.borderLightGrey}`,
 };

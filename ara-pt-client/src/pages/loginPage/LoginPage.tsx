@@ -3,6 +3,7 @@ import { login } from '../../data/authProvider';
 import { LoadingSpinner } from '../../components';
 import { useNavigate } from 'react-router-dom';
 import { useCookie } from '../../hooks';
+import { Colour } from '../../assets';
 
 const LoginPage: React.FC = () => {
   const [username, setUsername] = useState<string>('');
@@ -61,7 +62,7 @@ const LoginPage: React.FC = () => {
             required
           />
         </div>
-        {loading ? <LoadingSpinner /> : <button type="submit">Login</button> }
+        {loading ? <LoadingSpinner /> : <button style={{backgroundColor: Colour.backgroundBlue}} type="submit">Login</button> }
       </form>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
