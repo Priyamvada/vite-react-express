@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 // import { fetchRepoList, RepoItem } from '../../data/repoListDataProvider';
 import { ListView, type ColumnProps, Toast, LoadingSpinner } from '../../components';
 import type { ListItem } from '../../components/ListView/listView.types';
-import { fetchInvoiceList } from '../../data/invoiceProvider';
+import { fetchInvoiceList, generatePaymentLink } from '../../data/invoiceProvider';
 import { Colour, FontSize, FontWeight } from '../../assets';
 import InvoiceModal from './InvoiceModal';
 import InvoicesFilterModal from './InvoicesFilterModal';
 import type { InvoiceFilterCriteria } from './invoice.types';
-import { set } from 'react-hook-form';
+import { get, set } from 'react-hook-form';
 
 interface InvoiceListViewProps {
   styles?: React.CSSProperties;
@@ -40,6 +40,22 @@ export const InvoiceListView: React.FC<InvoiceListViewProps> = ({ styles }) => {
     }
   };
 
+  const getPaymentLink = async (invoiceId: number) => {
+    try {
+      const paymentLink = await generatePaymentLink(invoiceId);
+      // Update the invoice list with the new payment link
+      setInvoiceList((prevList) =>
+        prevList.map((item) =>
+          item.id === invoiceId.toString()
+            ? { ...item, data: { ...item.data, payment_link: paymentLink } }
+            : item
+        )
+      );
+    } catch (error) {
+      console.error('Failed to generate payment link:', error);
+    }
+  };
+
   const handleInvoiceListItemClick = (item: ListItem) => {
   };
 
@@ -55,6 +71,10 @@ export const InvoiceListView: React.FC<InvoiceListViewProps> = ({ styles }) => {
   const handleFilterInvoiceClick = () => {
     setShowFilterModal(true);
   };
+
+  const handleGeneratePaymentLinkClicked = (invoiceId: string) => {
+    getPaymentLink(Number(invoiceId));
+  }
 
   useEffect(() => {
     fetchInvoices();
@@ -110,6 +130,29 @@ export const InvoiceListView: React.FC<InvoiceListViewProps> = ({ styles }) => {
       label: 'Paid Amount',
       type: 'number',
       sortable: true,
+    },
+    {
+      key: 'payment_link',
+      label: 'Payment Link',
+      type: 'text',
+      render: (item) => (
+        <>
+          {item?.data?.paid_amount != null && item.data.amount - item.data.paid_amount === 0 ? (
+            <span style={{ color: Colour.textGreen, fontWeight: FontWeight.bold }}>PAID</span>
+          ) : (
+            <>
+            {item?.data?.payment_link ? (
+              <a href={item.data.payment_link} target="_blank" rel="noopener noreferrer" style={{ color: Colour.backgroundBlue }}>Pay Here</a>
+              ) : (
+                <button
+                  onClick={() => handleGeneratePaymentLinkClicked(item!.id)}
+                  style={{ fontSize: FontSize.xsmall, background: Colour.backgroundBlue, color: Colour.textWhite }}>Generate</button>
+              )}
+            </>
+          )
+          }
+        </>
+      )
     },
     {
       key: 'paid_date',

@@ -9,6 +9,7 @@ export interface InvoiceItem {
   amount: number;
   currency: 'USD' | 'MYR' | 'INR' | 'IDR' | 'THB';
   paid_amount: number;
+  payment_link?: string;
   paid_date?: string;
   created_by_id: number;
   createdAt: string;
@@ -29,7 +30,7 @@ export async function fetchInvoiceList(): Promise<InvoiceItem[]> {
   }
 }
 
-export async function createInvoice(invoiceData: Omit<InvoiceItem, 'id' | 'paid_amount' | 'paid_date' | 'createdAt' | 'updatedAt' | 'created_by_id'>): Promise<InvoiceItem> {
+export async function createInvoice(invoiceData: Omit<InvoiceItem, 'id' | 'paid_amount' | 'paid_date' | 'payment_link' | 'createdAt' | 'updatedAt' | 'created_by_id'>): Promise<InvoiceItem> {
   try {
     const response = await axios.post('/invoice', invoiceData);
     return convertToInvoiceItem(response.data.invoice);
@@ -38,6 +39,20 @@ export async function createInvoice(invoiceData: Omit<InvoiceItem, 'id' | 'paid_
     let errorMessage = 'An unexpected error occurred.';
     if (isAxiosError(error) && error.response) {
       errorMessage = error.response.data.message || 'Creating invoice failed. Please try again.';
+    }
+    throw new Error(errorMessage);
+  }
+}
+
+export async function generatePaymentLink(invoiceId: number): Promise<string> {
+  try {
+    const response = await axios.get(`/generate-payment-link/?invoiceId=${invoiceId}`);
+    return response.data.payment_link;
+  } catch (error) {
+    console.error('Failed to generate payment link:', error);
+    let errorMessage = 'An unexpected error occurred.';
+    if (isAxiosError(error) && error.response) {
+      errorMessage = error.response.data.message || 'Generating payment link failed. Please try again.';
     }
     throw new Error(errorMessage);
   }

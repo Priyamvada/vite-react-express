@@ -97,3 +97,30 @@ exports.getInvoices = async (req, res) => {
     res.status(500).json({ error: 'Internal server error.' });
   }
 };
+
+exports.generatePaymentLink = async (req, res) => {
+  try {
+    const { invoiceId } = req.query;
+
+    // Find the invoice by ID
+    const invoice = await Invoice.findByPk(invoiceId);
+    if (!invoice) {
+      return res.status(404).json({ error: 'Invoice not found.' });
+    }
+
+    // Generate a payment link (this is a placeholder implementation)
+    const paymentLink = `https://payment-portal.example.com/pay/${invoiceId}`;
+
+    // Update the invoice with the payment link
+    invoice.payment_link = paymentLink;
+    await invoice.save();
+
+    res.status(200).json({
+      message: 'Payment link generated successfully.',
+      payment_link: paymentLink,
+    });
+  } catch (err) {
+    console.error('Error generating payment link:', err);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+};

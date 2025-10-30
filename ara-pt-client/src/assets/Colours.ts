@@ -9,6 +9,8 @@ export const Colour = {
   textLightGrey: '#AAA',
   textBlack: '#111',
   textDarkGrey: '#2B2B2B',
+  textGreen: '#28A745',
+  textRed: '#DC3545',
   borderDarkGrey: '#2B2B2B',
   borderLightGrey: '#E0E0E0',
 };
